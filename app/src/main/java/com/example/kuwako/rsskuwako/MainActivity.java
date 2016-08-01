@@ -18,7 +18,8 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private ArrayList mItems;
+    public static final String RSS_FEED_URL = "http://itpro.nikkeibp.co.jp/rss/ITpro.rdf";
+    private ArrayList<Item> mItems;
     private RssListAdapter mAdapter;
 
     @Override
@@ -46,11 +47,11 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        mItems = new ArrayList();
+        mItems = new ArrayList<Item>();
         mAdapter = new RssListAdapter(this, mItems);
 
-        setListAdapter(mAdapter);
-
+        RssParserTask task = new RssParserTask(this, mAdapter);
+        task.execute(RSS_FEED_URL);
     }
 
     @Override
