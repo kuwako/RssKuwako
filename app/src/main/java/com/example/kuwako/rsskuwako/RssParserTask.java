@@ -2,6 +2,7 @@ package com.example.kuwako.rsskuwako;
 
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
+import android.util.Xml;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -50,10 +51,36 @@ public class RssParserTask extends AsyncTask<String, Integer, RssListAdapter> {
     }
 
     public RssListAdapter parseXml(InputStream is) throws IOException, XmlPullParserException {
-        XmlPullParser parser = XML.newPullParser();
+        XmlPullParser parser = Xml.newPullParser();
         try {
             // TODO
-            // http://itpro.nikkeibp.co.jp/article/COLUMN/20100302/345249/?ST=android-dev&P=2
+            parser.setInput(is, null);
+            int eventType = parser.getEventType();
+            Item currentItem = null;
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                String tag = null;
+                switch (eventType) {
+                    case XmlPullParser.START_TAG:
+                        tag = parser.getName();
+                        if (tag.equals("item")) {
+                            currentItem = new Item();
+                        } else if (currentItem == null) {
+                            if (tag.equals("title")) {
+                                currentItem.setTitle(parser.nextText());
+                            } else if (tag.equals("body")) {
+                                currentItem.setBody(parser.nextText());
+                            }
+                        }
+                        break;
+                    case XmlPullParser.END_TAG:
+                        tag = parser.getName();
+                        if (tag.equals("item")) {
+                            mAdapter.add(currentItem);
+                        }
+                        break;
+                }
+                eventType = parser.next();
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

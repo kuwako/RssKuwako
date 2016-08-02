@@ -10,6 +10,8 @@ public class Item {
     private String sourceUrl;
     private String mainImg;
 
+    public Item() {}
+
     public Item(String title, String body, String imgUrl, String sourceUrl) {
         this.title = title;
         this.body = body;
