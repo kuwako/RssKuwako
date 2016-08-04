@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity
     private ArrayList<Item> mItems;
     private RssListAdapter mAdapter;
     public static final int MENU_ITEM_RELOAD = Menu.FIRST;
+    private ListView mListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,17 +55,24 @@ public class MainActivity extends AppCompatActivity
         mItems = new ArrayList<Item>();
         mAdapter = new RssListAdapter(this, mItems);
 
+        mListView = (ListView) findViewById(R.id.rssList);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Item item = mItems.get(position);
+                Intent intent = new Intent(MainActivity.this, ItemDetailActivity.class);
+                intent.putExtra("title", item.getTitle());
+                intent.putExtra("body", item.getBody());
+                startActivity(intent);
+            }
+        });
+
         RssParserTask task = new RssParserTask(this, mAdapter);
         task.execute(RSS_FEED_URL);
     }
 
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-        Item item = mItems.get(position);
-        Intent intent = new Intent(this, ItemDetailActivity.class);
-        intent.putExtra("title", item.getTitle());
-        intent.putExtra("body", item.getBody());
-        startActivity(intent);
+    public void setListAdapter(RssListAdapter adapter) {
+        mListView.setAdapter(adapter);
     }
 
     @Override
@@ -80,7 +89,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         boolean result = super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.main, menu);
-        menu.add(0, MENU_ITEM_RELOAD, 0, "更新")
+        menu.add(0, MENU_ITEM_RELOAD, 0, "更新");
         return result;
     }
 

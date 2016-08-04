@@ -27,7 +27,7 @@ public class RssListAdapter extends ArrayAdapter<Item>{
         View view = converView;
 
         if (converView == null) {
-            view = mInflater.inflate(R.layout.item_row);
+            view = mInflater.inflate(R.layout.item_row, parent);
         }
 
         Item item = this.getItem(position);
